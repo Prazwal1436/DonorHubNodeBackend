@@ -9,6 +9,7 @@ const {
   passwordSchema,
   updateSchema,
 } = require("../validation/user");
+const { string } = require("joi");
 const signup = async (req, res) => {
   try {
     let {
@@ -159,7 +160,8 @@ const changeStatus = async (req, res, next) => {
   
   try {
     const _id = req.decoded_token._id;
-    if (isBoolean(public)) {
+    
+    if (public=="true"||public=="false") {
       user=await UserData.findByIdAndUpdate(_id, {
         public,
       });
