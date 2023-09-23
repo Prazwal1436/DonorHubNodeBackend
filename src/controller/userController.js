@@ -121,7 +121,8 @@ const updateUser = async (req, res, next) => {
       fullName,
       dateOfBirth,
       gender,
-      public,
+      
+      email
     } = await updateSchema.validateAsync(req.body);
     const _id = req.decoded_token._id;
     let user = await UserData.findById(_id).select(["password"]);
@@ -138,7 +139,8 @@ const updateUser = async (req, res, next) => {
         fullName,
         dateOfBirth,
         gender,
-        public,
+        
+        email
       });
       let user_obj = user.toObject();
       delete user_obj.password;
