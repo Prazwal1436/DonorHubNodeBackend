@@ -22,16 +22,18 @@ const createLocation = async (req, res) => {
 
 const updateLocation = async (req, res) => {
   try {
-    const user_id = req.decoded_token._id;
+    const user_id = (req.decoded_token._id);
 
     let { latitude, longitude } = await updateLocationSchema.validateAsync(
       req.body
     );
-    await UserLocation.findOneAndUpdate(user_id, {
+
+    await UserLocation.findOneAndUpdate({user_id:user_id}, {
       location: { type: "Point", coordinates: [longitude, latitude] },
     });
     res.status(201).json({ message: "Updated successfully" });
   } catch (err) {
+    console.log(err);
     return res.send({ err });
   }
 };

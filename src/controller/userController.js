@@ -1,11 +1,15 @@
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const UserData = require("../model/UserData");
+const {  isBoolean } = require("lodash");
 const saltRounds = 10;
-const { signupSchema, loginSchema, passwordSchema,updateSchema } = require("../validation/user");
+const {
+  signupSchema,
+  loginSchema,
+  passwordSchema,
+  updateSchema,
+} = require("../validation/user");
 const signup = async (req, res) => {
- 
-
   try {
     let {
       email,
@@ -21,7 +25,7 @@ const signup = async (req, res) => {
 
     let user = await UserData.findOne({ email });
     if (!user) {
-      user= await UserData.create({
+      user = await UserData.create({
         email,
         password: hashed_password,
         phoneNo,
@@ -29,11 +33,11 @@ const signup = async (req, res) => {
         fullName,
         dateOfBirth,
         gender,
-        public
+        public,
       });
-      let user_obj=user.toObject();
+      let user_obj = user.toObject();
       delete user_obj.password;
-  
+
       var access_token = jwt.sign(user_obj, process.env.JWT_SECRET, {});
       return res.status(201).send({
         access_token,
@@ -47,7 +51,6 @@ const signup = async (req, res) => {
 };
 
 const login = async (req, res) => {
- 
   try {
     const { email, password } = await loginSchema.validateAsync(req.body);
     // Load hash from your password DB.
@@ -61,9 +64,9 @@ const login = async (req, res) => {
       });
     }
 
-    let user_data = await UserData.findById(user._id)
+    let user_data = await UserData.findById(user._id);
 
-    let user_obj=user_data.toObject();
+    let user_obj = user_data.toObject();
 
     var access_token = jwt.sign(user_obj, process.env.JWT_SECRET, {});
 
@@ -118,7 +121,7 @@ const updateUser = async (req, res, next) => {
       fullName,
       dateOfBirth,
       gender,
-      public
+      public,
     } = await updateSchema.validateAsync(req.body);
     const _id = req.decoded_token._id;
     let user = await UserData.findById(_id).select(["password"]);
@@ -129,21 +132,36 @@ const updateUser = async (req, res, next) => {
         message: "Password Doesnt Match",
       });
     } else {
-       user = await UserData.findByIdAndUpdate(_id, {
+      user = await UserData.findByIdAndUpdate(_id, {
         phoneNo,
         bloodGroup,
         fullName,
         dateOfBirth,
         gender,
-        public
+        public,
       });
-      let user_obj=user.toObject();
+      let user_obj = user.toObject();
       delete user_obj.password;
-  
+
       var access_token = jwt.sign(user_obj, process.env.JWT_SECRET, {});
       return res.status(201).send({
         access_token,
       });
+    }
+  } catch (err) {
+    return res.send({ err });
+  }
+};
+const changeStatus = async (req, res, next) => {
+  let status = req.body.public;
+  
+  try {
+    const _id = req.decoded_token._id;
+    if (isBoolean(status)) {
+      await UserData.findByIdAndUpdate(_id, {
+        public,
+      });
+      return res.status(201).send();
     }
   } catch (err) {
     return res.send({ err });
@@ -155,5 +173,6 @@ module.exports = {
   login,
   getUser,
   changePassword,
-  updateUser
+  updateUser,
+  changeStatus,
 };

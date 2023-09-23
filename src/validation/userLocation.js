@@ -5,7 +5,7 @@ const createLocationSchema = Joi.object({
     longitude: Joi.number()
 });
 const updateLocationSchema = Joi.object({
-    _id:Joi.string(),
+    
     latitude: Joi.number(),
     longitude: Joi.number()
 });
