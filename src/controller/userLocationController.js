@@ -59,7 +59,9 @@ const updateDonationStatus = async (req, res) => {
     });
     res.status(201).json({ message: "Updated successfully" });
   } catch (err) {
+   
     return res.send({ err });
+
   }
 };
 

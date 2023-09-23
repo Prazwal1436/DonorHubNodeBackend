@@ -155,11 +155,11 @@ const updateUser = async (req, res, next) => {
   }
 };
 const changeStatus = async (req, res, next) => {
-  let status = req.body.public;
+  let public = req.body.public;
   
   try {
     const _id = req.decoded_token._id;
-    if (isBoolean(status)) {
+    if (isBoolean(public)) {
       user=await UserData.findByIdAndUpdate(_id, {
         public,
       });
@@ -172,6 +172,7 @@ const changeStatus = async (req, res, next) => {
       });
     }
   } catch (err) {
+    console.log({err});
     return res.send({ err });
   }
 };
