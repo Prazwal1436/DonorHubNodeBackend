@@ -160,10 +160,16 @@ const changeStatus = async (req, res, next) => {
   try {
     const _id = req.decoded_token._id;
     if (isBoolean(status)) {
-      await UserData.findByIdAndUpdate(_id, {
+      user=await UserData.findByIdAndUpdate(_id, {
         public,
       });
-      return res.status(201).send();
+      let user_obj = user.toObject();
+      delete user_obj.password;
+
+      var access_token = jwt.sign(user_obj, process.env.JWT_SECRET, {});
+      return res.status(201).send({
+        access_token,
+      });
     }
   } catch (err) {
     return res.send({ err });
