@@ -29,8 +29,9 @@ const updateDonation = async (req, res) => {
 const getLastDonationByID = async (req,res)=>{
   try {
     const user_id = req.decoded_token._id;
-    let lastDonation = await LastDonation.findOne({ user_id });
-    res.status(201).json(lastDonation);
+    let donations = await LastDonation.find({ user_id }).sort({ createdAt: -1 });
+    let count=donations?.length;
+    res.status(201).json({count,lastDonationDate:donations?.[count -1]?.createdAt});
   } catch (err) {
     return res.send({ err });
   }

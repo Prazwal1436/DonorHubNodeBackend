@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const UserData = require("../model/UserData");
-const {  isBoolean } = require("lodash");
 const saltRounds = 10;
 const {
   signupSchema,
@@ -9,7 +8,7 @@ const {
   passwordSchema,
   updateSchema,
 } = require("../validation/user");
-const { string } = require("joi");
+const OTPModel = require("../model/OTPModel");
 const signup = async (req, res) => {
   try {
     let {
@@ -122,8 +121,8 @@ const updateUser = async (req, res, next) => {
       fullName,
       dateOfBirth,
       gender,
-      
-      email
+
+      email,
     } = await updateSchema.validateAsync(req.body);
     const _id = req.decoded_token._id;
     let user = await UserData.findById(_id).select(["password"]);
@@ -140,8 +139,8 @@ const updateUser = async (req, res, next) => {
         fullName,
         dateOfBirth,
         gender,
-        
-        email
+
+        email,
       });
       let user_obj = user.toObject();
       delete user_obj.password;
@@ -157,12 +156,12 @@ const updateUser = async (req, res, next) => {
 };
 const changeStatus = async (req, res, next) => {
   let public = req.body.public;
-  
+
   try {
     const _id = req.decoded_token._id;
-    
-    if (public=="true"||public=="false") {
-      user=await UserData.findByIdAndUpdate(_id, {
+
+    if (public == "true" || public == "false") {
+      user = await UserData.findByIdAndUpdate(_id, {
         public,
       });
       let user_obj = user.toObject();
@@ -174,10 +173,51 @@ const changeStatus = async (req, res, next) => {
       });
     }
   } catch (err) {
-    console.log({err});
+    console.log({ err });
     return res.send({ err });
   }
 };
+
+const resetPassword = async (req, res, next) => {
+  const { email, password, otp } = req.body;
+
+  try {
+    if (!email || !password || !otp) {
+      return res.status(403).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const existingUser = await UserData.findOne({ email });
+    if (!existingUser.email) {
+      return res.status(400).json({
+        success: false,
+        message: "User does not exists",
+      });
+    }
+
+    const otpRes = await OTPModel.find({ email })
+      .sort({ createdAt: -1 })
+      .limit(1);
+    if (otpRes.length === 0 || otp !== otpRes[0].otp) {
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
+    }
+    let _id = existingUser?._id;
+    let hashed_password = await bcrypt.hash(password, saltRounds);
+    await UserData.findByIdAndUpdate(_id, { password: hashed_password });
+    return res.status(201).send({
+      message: "Password Changed Succesfully",
+    });
+  } catch (err) {
+    console.log({ err });
+    return res.send({ err });
+  }
+};
+
 
 module.exports = {
   signup,
@@ -186,4 +226,5 @@ module.exports = {
   changePassword,
   updateUser,
   changeStatus,
+  resetPassword,
 };

@@ -11,6 +11,7 @@ const userDataSchema = new mongoose.Schema(
     dateOfBirth: { type: Date, required: false },
     gender: { type: String,required: false , enum: ["male", "female", "other"] },
     public: { type: Boolean,required: false },
+    verified: { type: Boolean,required: false ,default:false},
   },
   {
     timestamps: true,
