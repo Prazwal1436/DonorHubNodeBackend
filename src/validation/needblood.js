@@ -19,19 +19,12 @@ const createNeedSchema = Joi.object({
 
 const updateNeedSchema = Joi.object({
     user_id: Joi.string(),
-    latitude: Joi.number(),
-    longitude: Joi.number(),
-    reason: Joi.string().allow(null).allow("").optional(),
-    date: Joi.date().allow(null).allow("").optional(),
-    urgent: Joi.bool(),
     status: Joi.string()
       .pattern(new RegExp("^(ongoing|found|notfound|notneeded)$"))
       .allow(null)
       .allow("")
       .optional(),
-    bloodGroup: Joi.string()
-      .allow("")
-      .optional(),
+    _id:Joi.string(),
   });
 
 
