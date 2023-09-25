@@ -165,12 +165,6 @@ const updateNeedBlood = async (req, res) => {
   try {
     let {
       _id,
-      bloodGroup,
-      reason,
-      date,
-      urgent,
-      latitude,
-      longitude,
       status,
       user_id,
     } = await updateNeedSchema.validateAsync(req.body);
@@ -178,13 +172,7 @@ const updateNeedBlood = async (req, res) => {
       const needBlood = await NeedBlood.findByIdAndUpdate(
         _id,
         {
-          bloodGroup,
-          reason,
-          date,
-          urgent,
-          location: { type: "Point", coordinates: [longitude, latitude] },
           status,
-          user_id,
         },
         {
           new: true,
