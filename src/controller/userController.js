@@ -121,7 +121,6 @@ const updateUser = async (req, res, next) => {
       fullName,
       dateOfBirth,
       gender,
-
       email,
     } = await updateSchema.validateAsync(req.body);
     const _id = req.decoded_token._id;

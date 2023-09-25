@@ -28,6 +28,10 @@ const passwordSchema = Joi.object({
 });
 
 const updateSchema = Joi.object({
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ["com", "net"] },
+  }),
   password: Joi.string().min(8).max(30),
   fullName: Joi.string().allow(null).allow('').optional(),
   phoneNo: Joi.string(),
