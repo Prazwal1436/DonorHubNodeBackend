@@ -1,3 +1,4 @@
+const { response } = require('express');
 const nodemailer = require('nodemailer');
 
 const mailSender = async (email, title, body) => {
@@ -5,20 +6,17 @@ const mailSender = async (email, title, body) => {
   console.log({email, title, body})
   try {
     // Create a Transporter to send emails
-    let transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
       port: 587,
-      secure: false,
-      logger:true,
-      debug:true,
       auth: {
-        user:'verifydonorhub@gmail.com',
-        pass: 'Padasoft@7342',
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS
       }
-    });
+  });
     // Send emails to users
     let info = await transporter.sendMail({
-      from: 'verifydonorhub@gmail.com',
+      from: '"Sarathi" <verify@aoneskills.com>',
       to: email,
       subject: title,
       html: body,
