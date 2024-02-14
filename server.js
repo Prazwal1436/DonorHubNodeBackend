@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
+const db = require('./src/database')
 
 require('dotenv').config()
-const db_link=process.env.MONGO_DB_URL;
+
+
 
 
 
@@ -20,14 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Mongo DB Connections
-mongoose.connect(`${db_link}/donerhub`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(res=>{
-    console.log('MongoDB Connection Succeeded')
-}).catch(err=>{
-    console.log('Error in DB connection: ' + err)
-});
+
 
 
 const userRoutes = require("./src/routes/user")
@@ -55,3 +49,9 @@ app.listen(PORT, (data, err) => {
 
     }
 })
+
+// Connect to MongoDB
+const DATABASE_URL = process.env.MONGO_DB_URL || 'mongodb://127.0.0.1:27017'
+// const DATABASE_URL = 'mongodb://127.0.0.1:27017'
+const DATABASE = process.env.DB || 'Aoneskills'
+db(DATABASE_URL, DATABASE);
